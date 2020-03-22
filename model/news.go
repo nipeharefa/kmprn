@@ -4,9 +4,9 @@ import "time"
 
 type (
 	News struct {
-		ID      int       `db:"id"`
-		Author  string    `db:"author"`
-		Body    string    `db:"body"`
-		Created time.Time `db:"created"`
+		ID      int       `db:"id" json:"id"`
+		Author  string    `db:"author" json:"author"`
+		Body    string    `db:"body" json:"body"`
+		Created time.Time `db:"created" json:"created"`
 	}
 )

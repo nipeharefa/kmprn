@@ -10,6 +10,7 @@ import (
 type (
 	NewsRepository interface {
 		Create(*model.News) error
+		FindById(ID int) (model.News, error)
 	}
 	newsRepository struct {
 		db *sqlx.DB
@@ -35,4 +36,11 @@ func (nr *newsRepository) Create(news *model.News) error {
 	}
 
 	return nil
+}
+
+func (nr *newsRepository) FindById(ID int) (news model.News, err error) {
+
+	query := "SELECT * FROM news where id=$1 limit 1"
+	err = nr.db.Get(&news, query, ID)
+	return
 }

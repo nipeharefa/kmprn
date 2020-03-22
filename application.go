@@ -9,6 +9,7 @@ import (
 	_ "github.com/lib/pq"
 	mq "github.com/nipeharefa/kmprn/amqp"
 	"github.com/nipeharefa/kmprn/controller"
+	"github.com/nipeharefa/kmprn/repository"
 	"github.com/olivere/elastic/v7"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -100,8 +101,12 @@ func (a *application) connectDB() {
 
 func (a *application) StartHTTPServer() {
 
-	nc := controller.NewNewsController(a.broker)
+	// repository
+	newsRepo := repository.NewNewsRepository(a.db)
 
+	nc := controller.NewNewsController(a.broker, a.elasticClient, newsRepo)
+
+	a.e.GET("/news", nc.GetNews)
 	a.e.POST("/news", nc.CreateNews)
 
 	a.e.HideBanner = true

@@ -13,5 +13,6 @@ require (
 	github.com/spf13/viper v1.6.2
 	github.com/streadway/amqp v0.0.0-20200108173154-1c71cc93ed71
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
+	gopkg.in/olivere/elastic.v5 v5.0.84
 	gopkg.in/yaml.v2 v2.2.7 // indirect
 )
