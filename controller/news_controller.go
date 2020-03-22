@@ -15,6 +15,7 @@ import (
 	"github.com/nipeharefa/kmprn/model"
 	"github.com/nipeharefa/kmprn/repository"
 	"github.com/olivere/elastic/v7"
+	"github.com/patrickmn/go-cache"
 )
 
 type (
@@ -24,9 +25,10 @@ type (
 	}
 
 	newsController struct {
-		broker   *mq.AMQPBroker
-		esClient *elastic.Client
-		newsRepo repository.NewsRepository
+		broker      *mq.AMQPBroker
+		esClient    *elastic.Client
+		newsRepo    repository.NewsRepository
+		cacheSystem *cache.Cache
 	}
 
 	createNewsRequest struct {
@@ -46,6 +48,8 @@ func NewNewsController(broker *mq.AMQPBroker, esClient *elastic.Client, newsRepo
 	nc.broker = broker
 	nc.esClient = esClient
 	nc.newsRepo = newsRepo
+
+	nc.cacheSystem = cache.New(5*time.Minute, 10*time.Minute)
 
 	return nc
 }
@@ -104,6 +108,16 @@ func (nc *newsController) search(esClient *elastic.Client, page int) []model.New
 		return newses
 	}
 
+	var firstRow esSearcHResult
+
+	firstRecord := searchResult.Hits.Hits[0]
+	_ = json.Unmarshal(firstRecord.Source, &firstRow)
+
+	newsInCache, found := nc.cacheSystem.Get(string(firstRow.ID))
+	if found {
+		return newsInCache.([]model.News)
+	}
+
 	newsChan := make(chan model.News, totalHits)
 
 	wg.Add(totalHits)
@@ -112,7 +126,7 @@ func (nc *newsController) search(esClient *elastic.Client, page int) []model.New
 		var news esSearcHResult
 		_ = json.Unmarshal(hit.Source, &news)
 
-		go nc.findGourutine(newsChan, &wg, news.ID)
+		go nc.findNews(newsChan, &wg, news.ID)
 	}
 
 	wg.Wait()
@@ -127,10 +141,12 @@ func (nc *newsController) search(esClient *elastic.Client, page int) []model.New
 		return newses[i].ID > newses[j].ID
 	})
 
+	nc.cacheSystem.Set(string(newses[0].ID), newses, cache.DefaultExpiration)
+
 	return newses
 }
 
-func (nc *newsController) findGourutine(ch chan model.News, wg *sync.WaitGroup, id int) {
+func (nc *newsController) findNews(ch chan model.News, wg *sync.WaitGroup, id int) {
 
 	defer wg.Done()
 

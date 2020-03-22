@@ -8,6 +8,7 @@ require (
 	github.com/labstack/gommon v0.3.0
 	github.com/lib/pq v1.2.0
 	github.com/olivere/elastic/v7 v7.0.12
+	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.6.2
