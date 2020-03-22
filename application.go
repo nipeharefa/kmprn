@@ -71,7 +71,10 @@ func (a *application) connectToBroker() {
 
 	a.broker = broker
 
-	broker.Setup()
+	err = broker.Setup()
+	if err != nil {
+		log.Warn(err)
+	}
 }
 
 func (a *application) connectDB() {

@@ -23,7 +23,7 @@ func (a *application) StartConsumer() {
 
 	newsQHandler := consumer.NewCreateNewsHandler(newsRepo, a.elasticClient)
 
-	newsQ.ConsumerFunc(newsQHandler.Execute)
+	_ = newsQ.ConsumerFunc(newsQHandler.Execute)
 
 	select {}
 }

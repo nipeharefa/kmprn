@@ -55,7 +55,7 @@ func (h *createNewsHandler) Execute(d amqp.Delivery) {
 	esData.ID = news.ID
 	esData.Created = news.Created
 
-	esDataJSON, err := json.Marshal(esData)
+	esDataJSON, _ := json.Marshal(esData)
 	jsonString := string(esDataJSON)
 
 	ctx := context.Background()

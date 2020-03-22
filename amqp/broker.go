@@ -66,7 +66,7 @@ func (a *AMQPBroker) Setup() error {
 
 func (a *AMQPBroker) declareExchange() {
 
-	a.channel.ExchangeDeclare(
+	err := a.channel.ExchangeDeclare(
 		EXCHANGE_NAME, // name
 		EXCHANGE_TYPE, // type
 		true,          // durable
@@ -75,6 +75,10 @@ func (a *AMQPBroker) declareExchange() {
 		false,         // noWait
 		nil,           // arguments
 	)
+
+	if err != nil {
+		log.Warn(err)
+	}
 }
 
 func (a *AMQPBroker) Close() error {

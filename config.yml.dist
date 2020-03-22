@@ -1,2 +1,7 @@
 application:
+  db:
+    url: "user=kumparan password=password host=localhost port=5444 dbname=kumparan sslmode=disable"
   port: 8000
+
+amqp:
+  uri: "amqp://guest:guest@localhost:5672/"
