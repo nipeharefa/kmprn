@@ -1,0 +1,31 @@
+version: "3"
+services:
+  postgresql:
+    container_name: "kumparan-db"
+    image: "postgres:9.6"
+    ports:
+      - "5444:5432"
+    volumes:
+      - "./var/docker/volumes/postgresql:/var/lib/postgresql/data"
+    environment:
+      POSTGRES_USER: kumparan
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: kumparan
+
+  rabbitmq:
+    image: rabbitmq:3.7.3-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  elasticsearch:
+    image: "docker.elastic.co/elasticsearch/elasticsearch:7.4.2"
+    container_name: "kumparan-elasticsearch"
+    environment:
+      - xpack.security.enabled=false
+      - discovery.type=single-node
+    ports:
+      - 9200:9200
+      - 9300:9300
+    volumes:
+      - "./var/docker/volumes/elasticsearch:/usr/share/elasticsearch/data"
