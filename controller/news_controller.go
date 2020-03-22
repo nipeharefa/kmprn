@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"sort"
+	"strconv"
 	"sync"
 	"time"
 
@@ -51,7 +52,11 @@ func NewNewsController(broker *mq.AMQPBroker, esClient *elastic.Client, newsRepo
 
 func (nc *newsController) GetNews(c echo.Context) error {
 
-	n := nc.search(nc.esClient)
+	page := 0
+
+	page, _ = strconv.Atoi(c.QueryParam("page"))
+
+	n := nc.search(nc.esClient, page)
 	return c.JSON(http.StatusOK, n)
 }
 
@@ -68,7 +73,7 @@ func (nc *newsController) CreateNews(c echo.Context) error {
 	return c.JSON(http.StatusCreated, nil)
 }
 
-func (nc *newsController) search(esClient *elastic.Client) []model.News {
+func (nc *newsController) search(esClient *elastic.Client, page int) []model.News {
 
 	var wg sync.WaitGroup
 
@@ -80,7 +85,7 @@ func (nc *newsController) search(esClient *elastic.Client) []model.News {
 	searchSource := elastic.NewSearchSource()
 	searchSource.Query(elastic.NewMatchAllQuery())
 	searchSource.Size(perPage)
-	searchSource.From(0)
+	searchSource.From(perPage * page)
 	searchSource.Sort("created", false)
 
 	searchService := esClient.Search().
@@ -117,6 +122,7 @@ func (nc *newsController) search(esClient *elastic.Client) []model.News {
 		newses = append(newses, n)
 	}
 
+	// Sort News By ID
 	sort.Slice(newses, func(i, j int) bool {
 		return newses[i].ID > newses[j].ID
 	})
