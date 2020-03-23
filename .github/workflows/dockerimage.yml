@@ -13,6 +13,4 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build the Docker image
-      run: docker build --tag nipeharefa:kmprn .
-    - name: Push to Docker Registry
-      run : docker push nipeharefa/kmprn
+      run: docker build --tag nipeharefa/kmprn .

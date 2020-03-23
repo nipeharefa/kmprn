@@ -48,8 +48,10 @@ func NewApplication() Application {
 
 func (a *application) connectToES() {
 
+	esHost := viper.GetString("elastic.host")
+
 	client, err := elastic.NewClient(
-		elastic.SetURL("http://localhost:9200"),
+		elastic.SetURL(esHost),
 		elastic.SetHealthcheck(false),
 		elastic.SetSniff(false))
 
