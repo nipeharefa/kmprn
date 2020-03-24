@@ -19,6 +19,7 @@ import (
 )
 
 type (
+	// NewsController interface :nodoc:
 	NewsController interface {
 		CreateNews(c echo.Context) error
 		GetNews(c echo.Context) error
@@ -42,6 +43,7 @@ type (
 	}
 )
 
+// NewNewsController :nodoc:
 func NewNewsController(broker *mq.AMQPBroker, esClient *elastic.Client, newsRepo repository.NewsRepository) NewsController {
 
 	nc := &newsController{}
@@ -150,7 +152,7 @@ func (nc *newsController) findNews(ch chan model.News, wg *sync.WaitGroup, id in
 
 	defer wg.Done()
 
-	a, err := nc.newsRepo.FindById(id)
+	a, err := nc.newsRepo.FindByID(id)
 	if err != nil {
 		return
 	}

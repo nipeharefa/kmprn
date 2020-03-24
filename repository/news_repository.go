@@ -8,15 +8,17 @@ import (
 )
 
 type (
+	// NewsRepository :nodoc:
 	NewsRepository interface {
 		Create(*model.News) error
-		FindById(ID int) (model.News, error)
+		FindByID(ID int) (model.News, error)
 	}
 	newsRepository struct {
 		db *sqlx.DB
 	}
 )
 
+// NewNewsRepository :nodoc:
 func NewNewsRepository(db *sqlx.DB) NewsRepository {
 
 	nr := &newsRepository{db}
@@ -24,6 +26,7 @@ func NewNewsRepository(db *sqlx.DB) NewsRepository {
 	return nr
 }
 
+// Create :nodoc:
 func (nr *newsRepository) Create(news *model.News) error {
 
 	news.Created = time.Now()
@@ -38,7 +41,7 @@ func (nr *newsRepository) Create(news *model.News) error {
 	return nil
 }
 
-func (nr *newsRepository) FindById(ID int) (news model.News, err error) {
+func (nr *newsRepository) FindByID(ID int) (news model.News, err error) {
 
 	query := "SELECT * FROM news where id=$1 limit 1"
 	err = nr.db.Get(&news, query, ID)

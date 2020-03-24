@@ -10,8 +10,10 @@ import (
 )
 
 const (
-	EXCHANGE_NAME = "my-exchange"
-	EXCHANGE_TYPE = "topic"
+	// ExchangeName :nodoc:
+	ExchangeName = "my-exchange"
+	// ExchangeType from rabbit(header, direct, topic, fanout)
+	ExchangeType = "topic"
 )
 
 var (
@@ -20,12 +22,15 @@ var (
 )
 
 type (
+	// Broker :nodoc:
 	Broker interface {
 		Publish() error
 	}
 
+	// AMQPConfig :nodoc:
 	AMQPConfig struct{}
 
+	// AMQPBroker is instance broker
 	AMQPBroker struct {
 		sync.Mutex
 		conn    *amqp.Connection
@@ -35,6 +40,7 @@ type (
 	}
 )
 
+// NewAMQPBroker return new broker
 func NewAMQPBroker(uri string) *AMQPBroker {
 	amqpBroker := &AMQPBroker{}
 	amqpBroker.amqpURI = uri
@@ -42,6 +48,7 @@ func NewAMQPBroker(uri string) *AMQPBroker {
 	return amqpBroker
 }
 
+// Setup Exchange and topic
 func (a *AMQPBroker) Setup() error {
 
 	conn, err := amqp.Dial(a.amqpURI)
@@ -67,13 +74,13 @@ func (a *AMQPBroker) Setup() error {
 func (a *AMQPBroker) declareExchange() {
 
 	err := a.channel.ExchangeDeclare(
-		EXCHANGE_NAME, // name
-		EXCHANGE_TYPE, // type
-		true,          // durable
-		false,         // auto-deleted
-		false,         // internal
-		false,         // noWait
-		nil,           // arguments
+		ExchangeName, // name
+		ExchangeType, // type
+		true,         // durable
+		false,        // auto-deleted
+		false,        // internal
+		false,        // noWait
+		nil,          // arguments
 	)
 
 	if err != nil {
@@ -81,6 +88,7 @@ func (a *AMQPBroker) declareExchange() {
 	}
 }
 
+// Close connection
 func (a *AMQPBroker) Close() error {
 
 	if a.conn == nil {
@@ -90,6 +98,7 @@ func (a *AMQPBroker) Close() error {
 	return a.conn.Close()
 }
 
+// Publish message to broker
 func (a *AMQPBroker) Publish(payload interface{}, eventName string) error {
 
 	body, _ := json.Marshal(payload)
@@ -110,7 +119,7 @@ func (a *AMQPBroker) Publish(payload interface{}, eventName string) error {
 		return ErrNoActiveConn
 	}
 
-	err := channel.Publish(EXCHANGE_NAME, eventName, false, false, publishing)
+	err := channel.Publish(ExchangeName, eventName, false, false, publishing)
 
 	logLevel := log.InfoLevel
 
@@ -124,6 +133,7 @@ func (a *AMQPBroker) Publish(payload interface{}, eventName string) error {
 	return err
 }
 
+// GetConn return active connection
 func (a *AMQPBroker) GetConn() *amqp.Connection {
 
 	return a.conn

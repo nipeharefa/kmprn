@@ -3,6 +3,7 @@ package model
 import "time"
 
 type (
+	// News :nodoc:
 	News struct {
 		ID      int       `db:"id" json:"id"`
 		Author  string    `db:"author" json:"author"`

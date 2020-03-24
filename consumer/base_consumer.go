@@ -5,16 +5,19 @@ import (
 )
 
 type (
+	// Queue interface
 	Queue interface {
 		GetQueueName() string
 		Consume() (<-chan amqp.Delivery, error)
-		ConsumerFunc(fn ConsumerFunc) error
+		ConsumerFunc(fn Handler) error
 		Setup() error
 	}
 
+	// QueueHandler interfce
 	QueueHandler interface {
 		Execute(amqp.Delivery)
 	}
 
-	ConsumerFunc func(amqp.Delivery)
+	// Handler :nodoc:
+	Handler func(amqp.Delivery)
 )

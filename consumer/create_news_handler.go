@@ -30,6 +30,7 @@ type (
 	}
 )
 
+// NewCreateNewsHandler :nodoc:
 func NewCreateNewsHandler(newsRepo repository.NewsRepository, elasticClient *elastic.Client) QueueHandler {
 
 	return &createNewsHandler{newsRepo, elasticClient}

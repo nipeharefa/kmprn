@@ -12,6 +12,7 @@ type (
 	}
 )
 
+// NewCreateNewsQ :nodoc:
 func NewCreateNewsQ(c *amqp.Channel) Queue {
 
 	cq := createNewsQ{}
@@ -73,7 +74,7 @@ func (s createNewsQ) Setup() error {
 	return nil
 }
 
-func (s createNewsQ) ConsumerFunc(fn ConsumerFunc) error {
+func (s createNewsQ) ConsumerFunc(fn Handler) error {
 	deliveries, err := s.Consume()
 	if err != nil {
 		return err

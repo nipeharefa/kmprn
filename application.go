@@ -16,6 +16,7 @@ import (
 )
 
 type (
+	// Application :nodoc:
 	Application interface {
 		StartHTTPServer()
 		StartConsumer()
