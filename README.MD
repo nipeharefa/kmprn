@@ -45,10 +45,12 @@ curl --location --request PUT 'http://localhost:9200/news/_mapping' \
 }
 ```
 
+## Example
+
 ### Create News
 
 ```json
-curl --location --request POST 'http://localhost:8000/news' \
+curl --location --request POST 'https://kumparan.nias.dev/news' \
 --header 'Content-Type: application/json' \
 --data-raw '{
 	"author": "Kumparan",
